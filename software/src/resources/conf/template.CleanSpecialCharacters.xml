@@ -1,0 +1,22 @@
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<!-- $Header: conf/template.CleanSpecialCharacters.xml
+ -->
+
+<properties>
+    
+        <!-- Specify the caDSR database being used by the Sentinel Tool.
+        -->
+        <entry key="DSurl">@CADSR.DS.FULLURL@</entry>
+        <entry key="DSusername">@CADSR.DS.USER@</entry>
+        <entry key="DSpassword">@CADSR.DS.PSWD@</entry>
+        
+        <!-- Use "select" to see the records that will be updated, use "update" to clean up the data -->
+        <entry key="action">update</entry>
+
+        <!--  <entry key="table.defs"  >sbr.DEFINITIONS_VIEW definition</entry>  -->
+		<entry key="table.rd"  >sbr.REFERENCE_DOCUMENTS_VIEW doc_text</entry>	
+       	<entry key="table.pv"    >sbr.PERMISSIBLE_VALUES_VIEW value</entry>
+
+
+</properties>
