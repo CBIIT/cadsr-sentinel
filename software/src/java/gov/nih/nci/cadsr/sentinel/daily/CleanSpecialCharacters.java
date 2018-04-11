@@ -54,9 +54,7 @@ public class CleanSpecialCharacters
     private static final String _propTable = "table.";
     private static final String _propAction = "action";
     private static final String _propUpdate = "update";
-
-    private static final String _sqlRegexp = "[^[:alnum:][:space:][:punct:]]";
-    private static final String _javaRegexp = "[^\\p{Alnum}\\p{Space}\\p{Punct}]";
+    private static final String _specialChar = "C2A0";
 
     private static final String _pvidseq = "PV_IDSEQ = '4C45F711-8657-7A81-E053-246C850A9856' and ";
     private static final String _rdidseq = "RD_IDSEQ='34B83083-BDF2-4398-E050-BB89AD431614' and ";
@@ -69,13 +67,7 @@ public class CleanSpecialCharacters
     
     
     private static final String _sqlSet = "$col$ = substr($col$, 1, length($col$) -1)";//"$col$ = REGEXP_REPLACE($col$, '" + _sqlRegexp + "', chr(32))";
-    private static final String _sqlWhere = "instr ($col$, UTL_RAW.CAST_TO_VARCHAR2('C2A0'), 1) = length($col$) ";//"REGEXP_LIKE($col$, '" + _sqlRegexp + "')";
-    
-    
-    
-    private static final String _sqlSelect = "select * from $table$ "
-        //+ "where REGEXP_LIKE($col$, '" + _sqlRegexp + "') ";
-    	+ "where instr ($col$, UTL_RAW.CAST_TO_VARCHAR2(hextoraw('C2A0')), 1) = length($col$)";
+    private static final String _sqlWhere = "instr ($col$, UTL_RAW.CAST_TO_VARCHAR2('"+_specialChar+"'), 1) = length($col$) ";//"REGEXP_LIKE($col$, '" + _sqlRegexp + "')";
     
     /**
      * @param args_
@@ -94,8 +86,8 @@ public class CleanSpecialCharacters
         
         try
         {
-            _logger.info("");
-            _logger.info(CleanSpecialCharacters.class.getClass().getName() + " begins");
+            _logger.info("CleanSpecialCharacters begins");
+            _logger.info("Template: "+args_[1]);   
             cs.doClean(args_[1]);
         }
         catch (Exception ex)
@@ -167,113 +159,16 @@ public class CleanSpecialCharacters
 
             // Report results
             if (updates > 0)
-                _logger.info("Fixed [" + prop_ + "] " + updates + " records.");
+                _logger.info("Fixed [" + prop_ + "] " + updates + " record(s).");
             else
-                _logger.debug("Fixed [" + prop_ + "] " + updates + " records.");
+                _logger.info("No records updated.");
             
             // Get ready for next one.
             stmt.close();
             _conn.commit();
         }
         
-    }
-    
-    /**
-     * @author lhebel
-     *
-     */
-    public class DoSelect extends DoWork
-    {
-
-        /* (non-Javadoc)
-         * @see gov.nih.nci.cadsr.sentinel.daily.CleanSpecialCharacters.DoWork#apply(java.lang.String, java.lang.String)
-         */
-        @Override
-        public void apply(String[] list_, String prop_) throws Exception
-        {
-            // Build the SQL SELECT
-            final String union = "union ";
-            String sql = _sqlSelect.replace("$table$", list_[0]);
-            String unions = "";
-            for (int cnt = 1; cnt < list_.length; ++cnt)
-            {
-                unions += union + sql.replace("$col$", list_[cnt]);
-            }
-            sql = unions.substring(union.length());
-            _logger.info(" --- do select sql:" + sql);
-            _logger.debug(sql);
-
-            // Execute the SELECT
-            PreparedStatement stmt = _conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
-            
-            // Build the columns header
-            List<String> cols = Arrays.asList(list_);
-            ResultSetMetaData rsmd = rs.getMetaData();
-            String header = "";
-            boolean[] targetCol = new boolean[rsmd.getColumnCount()];
-            for (int cnt = 0; cnt < rsmd.getColumnCount(); ++cnt)
-            {
-                if (cols.contains(rsmd.getColumnName(cnt + 1).toLowerCase()))
-                {
-                    targetCol[cnt] = true;
-                }
-                header = header + "\t" + rsmd.getColumnLabel(cnt + 1);
-            }
-
-            // Show each matching record
-            HashMap<Integer, String> badMap = new HashMap<Integer, String>();
-            boolean showHead = true;
-            int rowCnt = 0;
-            _logger.info("");
-            while (rs.next())
-            {
-                String line = "";
-                for (int cnt = 0; cnt < rsmd.getColumnCount(); ++cnt)
-                {
-                    String value = rs.getString(cnt + 1);
-                    if (value != null && targetCol[cnt])
-                    {
-                        for (int ndx = 0; ndx < value.length(); ++ndx)
-                        {
-                            String subvalue =value.substring(ndx, ndx + 1); 
-                            if (subvalue.matches(_javaRegexp))
-                            {
-                                badMap.put(Integer.valueOf(subvalue.codePointAt(0)), String.valueOf(subvalue.codePointAt(0)));
-                            }
-                        }
-                    }
-                    line = line + "\t" + ((value == null) ? "(_null_)" : value);
-                }
-                if (showHead)
-                {
-                    _logger.info(prop_ + " contains translatable character(s)");
-                    _logger.info(header.substring(1));
-                    showHead = false;
-                }
-                _logger.info(line.substring(1));
-                ++rowCnt;
-            }
-            if (showHead)
-            {
-                _logger.info(prop_ + " contains no translatable characters.");
-            }
-            else
-            {
-                String bad = "";
-                for (String code : badMap.values())
-                {
-                    bad += " " + code;
-                }
-                _logger.info(rowCnt + " results contain a combination of the translatable character(s)" + bad);
-            }
-            
-            // Get ready for next one.
-            rs.close();
-            stmt.close();
-        }
-        
-    }
+    }    
     
     /**
      * Run the clean up.
@@ -288,8 +183,6 @@ public class CleanSpecialCharacters
         try
         {
             open();
-            
-            DoWork select = new DoSelect();
 
             // Go through all the property values.
             Enumeration props = _propList.propertyNames();
@@ -306,9 +199,6 @@ public class CleanSpecialCharacters
                     if (parts.length < 2)
                         throw new RuntimeException("Table properties must be {table name, column name [, column name]} sets.");
 
-                    // Always report on the offenders
-                    select.apply(parts, prop + ": " + tabCol);
-                    
                     // Fix the data if appropriate
                     _action.apply(parts, prop + ": " + tabCol);
                 }
