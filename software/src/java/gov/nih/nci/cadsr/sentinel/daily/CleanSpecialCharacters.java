@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -55,20 +56,15 @@ public class CleanSpecialCharacters
     private static final String _propAction = "action";
     private static final String _propUpdate = "update";
     private static final String _specialChar = "C2A0";
+    private static final String _nonBreakingSpace = " ";
 
-    private static final String _pvidseq = "PV_IDSEQ = '4C45F711-8657-7A81-E053-246C850A9856' and ";
-    private static final String _rdidseq = "RD_IDSEQ='34B83083-BDF2-4398-E050-BB89AD431614' and ";
-    
     private static final String _sqlUpdate = "update $table$ "
         + "set $sets$ "
-        + "where "
-        + "$rowLimit$ "
-        + "$wheres$";
+        + "where $wheres$";
     
-    
-    private static final String _sqlSet = "$col$ = substr($col$, 1, length($col$) -1)";//"$col$ = REGEXP_REPLACE($col$, '" + _sqlRegexp + "', chr(32))";
-    private static final String _sqlWhere = "instr ($col$, UTL_RAW.CAST_TO_VARCHAR2('"+_specialChar+"'), 1) = length($col$) ";//"REGEXP_LIKE($col$, '" + _sqlRegexp + "')";
-    
+    private static final String _sqlSet = "$col$ = REGEXP_REPLACE($col$, '" + _nonBreakingSpace + "', '')";
+    private static final String _sqlWhere = "instr ($col$, UTL_RAW.CAST_TO_VARCHAR2('"+_specialChar+"'), 1) = length($col$) ";
+
     /**
      * @param args_
      */
@@ -76,10 +72,11 @@ public class CleanSpecialCharacters
     {
         if (args_.length != 2)
         {
-            System.err.println(CleanSpecialCharacters.class.getName() + " log4j.xml config.xml");
+            System.err.println("Please ensure that the log4j.xml and CleanSpecialCharacters.xml are passed as parameters, in that order. Either one of them or both are missing.");
             return;
         }
 
+        //Configuration of log4j
         DOMConfigurator.configure(args_[0]);
         
         CleanSpecialCharacters cs = new CleanSpecialCharacters();
@@ -96,10 +93,6 @@ public class CleanSpecialCharacters
         }
     }
     
-    /**
-     * @author lhebel
-     *
-     */
     public class DoWork
     {
         DoWork()
@@ -116,10 +109,7 @@ public class CleanSpecialCharacters
         }
     }
     
-    /**
-     * @author lhebel
-     *
-     */
+    
     public class DoUpdate extends DoWork
     {
 
@@ -140,14 +130,11 @@ public class CleanSpecialCharacters
                 sets += comma + _sqlSet.replace("$col$", list_[cnt]);
                 wheres += or + _sqlWhere.replace("$col$", list_[cnt]);
             }
+            
             String sql = _sqlUpdate.replace("$table$", list_[0]);
             sql = sql.replace("$sets$", sets.substring(comma.length()));
             sql = sql.replace("$wheres$", wheres.substring(or.length()));
-            if (list_[0].equals("sbr.PERMISSIBLE_VALUES_VIEW"))
-            	sql = sql.replace("$rowLimit$", _pvidseq);
-            else if (list_[0].equals("sbr.REFERENCE_DOCUMENTS_VIEW"))
-            	sql = sql.replace("$rowLimit$", _rdidseq);            
-            
+
             _logger.info("Table name : "+list_[0]);
             
             _logger.info("do update sql : "+sql);
@@ -156,15 +143,16 @@ public class CleanSpecialCharacters
             // Execute the UPDATE
             PreparedStatement stmt = _conn.prepareStatement(sql);
             int updates = stmt.executeUpdate();
-
+			
             // Report results
             if (updates > 0)
-                _logger.info("Fixed [" + prop_ + "] " + updates + " record(s).");
+                _logger.info("Fixed [" + prop_ + "] " + updates + " record(s) in "+list_[0]+".");
             else
-                _logger.info("No records updated.");
+                _logger.info("No records to update in "+list_[0]+".");
             
             // Get ready for next one.
             stmt.close();
+            //}
             _conn.commit();
         }
         

@@ -10,13 +10,13 @@
         <entry key="DSurl">@CADSR.DS.FULLURL@</entry>
         <entry key="DSusername">@CADSR.DS.USER@</entry>
         <entry key="DSpassword">@CADSR.DS.PSWD@</entry>
-        
-        <!-- Use "select" to see the records that will be updated, use "update" to clean up the data -->
+        <!--  Action to be performed -->
         <entry key="action">update</entry>
 
-        <!--  <entry key="table.defs"  >sbr.DEFINITIONS_VIEW definition</entry>  -->
-		<entry key="table.rd"  >sbr.REFERENCE_DOCUMENTS_VIEW doc_text</entry>	
-       	<entry key="table.pv"    >sbr.PERMISSIBLE_VALUES_VIEW value</entry>
-
+        <entry key="table.defs">sbr.DEFINITIONS_VIEW definition</entry>
+        <entry key="table.des">sbr.DESIGNATIONS_VIEW name</entry>
+		<entry key="table.rd">sbr.REFERENCE_DOCUMENTS_VIEW doc_text name</entry>	
+       	<entry key="table.pv">sbr.PERMISSIBLE_VALUES_VIEW meaning_description value</entry>
+		<entry key="table.vm">sbr.VALUE_MEANINGS_VIEW long_name description comments preferred_definition change_note definition_source</entry>
 
 </properties>

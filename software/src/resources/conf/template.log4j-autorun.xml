@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--L
-  Copyright ScenPro Inc, SAIC-F
-
-  Distributed under the OSI-approved BSD 3-Clause License.
-  See http://ncip.github.com/cadsr-sentinal/LICENSE.txt for details.
-L-->
-
 <!DOCTYPE log4j:configuration PUBLIC "-//Apache//log4j//dtd" "http://logging.apache.org/log4j/docs/api/org/apache/log4j/xml/log4j.dtd">
 
 <!-- ===================================================================== -->
@@ -15,13 +8,7 @@ L-->
 <!--                                                                       -->
 <!-- ===================================================================== -->
 
-<!-- $Header: /share/content/gforge/sentinel/sentinel/conf/template.log4j-autorun.xml,v 1.5 2008-11-06 19:08:11 hebell Exp $ -->
-<!-- $Name: not supported by cvs2svn $ -->
-
-<!--
-    | For more configuration infromation and examples see the Jakarta Log4j
-    | owebsite: http://jakarta.apache.org/log4j
--->
+<!-- $Header: /share/content/gforge/sentinel/sentinel/conf/template.log4j-autorun.xml -->
 
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
 
