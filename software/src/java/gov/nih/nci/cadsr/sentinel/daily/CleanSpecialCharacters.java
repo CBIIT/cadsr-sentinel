@@ -33,12 +33,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 /**
- * This class is responsible for cleaning the corrupted special characters in the database.  
+ * This class is responsible for cleaning(removing) the corrupted special characters in the database.  
  * Corruption can happen when pasting values into fields or inserting values programmatically
- * into the database. Because the presence of the character may or may not be visible depending on the
- * font it is changed to a simple space, ASCII 32.
- * 
- * The CR, LF and TAB are valid and not translated by this process.
+ * into the database. A set of tables will be cleaned of a set of given special characters
+ * that may not work well on the user interface.
  * 
  *
  */
@@ -56,6 +54,8 @@ public class CleanSpecialCharacters
     private static final String _propAction = "action";
     private static final String _propUpdate = "update";
     private static final String _specialChar = "C2A0";
+    
+    // This is 'NO-BREAK SPACE' UTF character "c2 a0". Do not remove/replace the below variable with whitespace.
     private static final String _nonBreakingSpace = " ";
 
     private static final String _sqlUpdate = "update $table$ "
@@ -84,7 +84,8 @@ public class CleanSpecialCharacters
         try
         {
             _logger.info("CleanSpecialCharacters begins");
-            _logger.info("Template: "+args_[1]);   
+            // Template that contains the properties for the database connection and the tables and their columns that require cleanup
+            _logger.info("XML file with DB props: "+args_[1]);   
             cs.doClean(args_[1]);
         }
         catch (Exception ex)
@@ -125,8 +126,10 @@ public class CleanSpecialCharacters
             String sets = "";
             String wheres = "";
 
+            // Iterate through the list for table name and its columns	
             for (int cnt = 1; cnt < list_.length; ++cnt)
             {
+            	// substitution of the column names in the update SQL statement 
                 sets += comma + _sqlSet.replace("$col$", list_[cnt]);
                 wheres += or + _sqlWhere.replace("$col$", list_[cnt]);
             }
@@ -150,9 +153,7 @@ public class CleanSpecialCharacters
             else
                 _logger.info("No records to update in "+list_[0]+".");
             
-            // Get ready for next one.
             stmt.close();
-            //}
             _conn.commit();
         }
         
@@ -160,7 +161,7 @@ public class CleanSpecialCharacters
     
     /**
      * Run the clean up.
-     * @param propFile The property file
+     * @param propFile The property file - XML file with the db connection properties and table & columns that require cleanup
      * @throws Exception 
      */
     @SuppressWarnings("unchecked")
