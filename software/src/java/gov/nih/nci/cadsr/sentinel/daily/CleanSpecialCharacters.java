@@ -1,15 +1,3 @@
-/*L
- * Copyright ScenPro Inc, SAIC-F
- *
- * Distributed under the OSI-approved BSD 3-Clause License.
- * See http://ncip.github.com/cadsr-sentinal/LICENSE.txt for details.
- */
-
-// Copyright (c) 2008 ScenPro, Inc.
-
-// $Header: /share/content/gforge/sentinel/sentinel/src/gov/nih/nci/cadsr/sentinel/daily/CleanStrings.java,v 1.6 2008-11-18 15:16:58 hebell Exp $
-// $Name: not supported by cvs2svn $
-
 package gov.nih.nci.cadsr.sentinel.daily;
 
 import gov.nih.nci.cadsr.sentinel.tool.Constants;
@@ -55,14 +43,11 @@ public class CleanSpecialCharacters
     private static final String _propUpdate = "update";
     private static final String _specialChar = "C2A0";
     
-    // This is 'NO-BREAK SPACE' UTF character "c2 a0". Do not remove/replace the below variable with whitespace.
-    private static final String _nonBreakingSpace = " ";
-
     private static final String _sqlUpdate = "update $table$ "
         + "set $sets$ "
         + "where $wheres$";
     
-    private static final String _sqlSet = "$col$ = REGEXP_REPLACE($col$, '" + _nonBreakingSpace + "', '')";
+    private static final String _sqlSet = "$col$ = substr($col$, 1, length($col$) -1)";
     private static final String _sqlWhere = "instr ($col$, UTL_RAW.CAST_TO_VARCHAR2('"+_specialChar+"'), 1) = length($col$) ";
 
     /**

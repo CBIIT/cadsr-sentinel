@@ -13,10 +13,14 @@
         <!--  Action to be performed -->
         <entry key="action">update</entry>
 
+		<entry key="table.de">sbr.DATA_ELEMENTS_VIEW long_name preferred_definition</entry>
+		<entry key="table.quest">sbrext.QUEST_CONTENTS_VIEW_EXT long_name preferred_definition</entry>
+		<entry key="table.dec">sbr.DATA_ELEMENT_CONCEPTS_VIEW long_name preferred_definition</entry>
         <entry key="table.defs">sbr.DEFINITIONS_VIEW definition</entry>
         <entry key="table.des">sbr.DESIGNATIONS_VIEW name</entry>
 		<entry key="table.rd">sbr.REFERENCE_DOCUMENTS_VIEW doc_text name</entry>	
        	<entry key="table.pv">sbr.PERMISSIBLE_VALUES_VIEW meaning_description value</entry>
 		<entry key="table.vm">sbr.VALUE_MEANINGS_VIEW long_name description comments preferred_definition change_note definition_source</entry>
+        <entry key="table.vd">sbr.VALUE_DOMAINS_VIEW long_name preferred_definition</entry>		
 
 </properties>
