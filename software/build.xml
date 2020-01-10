@@ -71,14 +71,14 @@ L-->
 		<then>
 			<property name="CADSR.DS.URL" value="${CADSR.DS.TNS.HOST}:${CADSR.DS.TNS.PORT}/${CADSR.DS.TNS.SID}" />
 			<echo message="Oracle 12c CADSR DS URL : ${CADSR.DS.URL}" />
+			<property name="CADSR.DS.FULLURL" value="${CADSR.DS.TNS.HOST}:${CADSR.DS.TNS.PORT}:${CADSR.DS.TNS.SID}" />
 		</then>
 		<else>
 			<property name="CADSR.DS.URL" value="${CADSR.DS.TNS.HOST}:${CADSR.DS.TNS.PORT}:${CADSR.DS.TNS.SID}" />
 			<echo message="Oracle 11g CADSR DS URL : ${CADSR.DS.URL}" />
+			<property name="CADSR.DS.FULLURL" value="${CADSR.DS.TNS.HOST}:${CADSR.DS.TNS.PORT}:${CADSR.DS.TNS.FULLSID}" />
 		</else>
-	</if>	
-	
-	<property name="CADSR.DS.FULLURL" value="${CADSR.DS.TNS.HOST}:${CADSR.DS.TNS.PORT}:${CADSR.DS.TNS.FULLSID}" />
+	</if>
 	
 	<property name="TOOL.ROOT.DIR" value="${TOOL.BASE.DIR}/cadsrsentinel" />
 	<property name="TOOL.LOG.DIR" value="${TOOL.BASE.DIR}/autorun_log" />
