@@ -279,6 +279,7 @@ L-->
         <copy tofile="${artifacts.dir}/bin/log4j.xml" filtering="true">
             <fileset file="${basedir}/src/resources/conf/template.log4j-autorun.xml" />
         </copy>
+    	<delete file="${artifacts.dir}/bin/log4j-1.2.14.jar" />
         <copy todir="${artifacts.dir}/bin">
             <fileset dir="${lib.dir}" >
             	<include name="**/*.jar" />
