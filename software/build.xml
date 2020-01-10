@@ -69,7 +69,7 @@ L-->
 	<if>
 		<isset property="oracle" />
 		<then>
-			<property name="CADSR.DS.URL" value="${CADSR.DS.TNS.HOST}:${CADSR.DS.TNS.PORT}/${CADSR.DS.TNS.FULLSID}" />
+			<property name="CADSR.DS.URL" value="${CADSR.DS.TNS.HOST}:${CADSR.DS.TNS.PORT}/${CADSR.DS.TNS.SID}" />
 			<echo message="Oracle 12c CADSR DS URL : ${CADSR.DS.URL}" />
 		</then>
 		<else>
