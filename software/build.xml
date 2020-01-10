@@ -65,7 +65,19 @@ L-->
 	<property name="TIER" value="-${tiername}" />
 	
 	<property name="CADSR.DS.TNS.FULLSID" value="${CADSR.DS.TNS.SID}.NCI.NIH.GOV" />
-	<property name="CADSR.DS.URL" value="${CADSR.DS.TNS.HOST}:${CADSR.DS.TNS.PORT}:${CADSR.DS.TNS.SID}" />
+	
+	<if>
+		<isset property="oracle" />
+		<then>
+			<property name="CADSR.DS.URL" value="${CADSR.DS.TNS.HOST}:${CADSR.DS.TNS.PORT}/${CADSR.DS.TNS.FULLSID}" />
+			<echo message="Oracle 12c CADSR DS URL : ${CADSR.DS.URL}" />
+		</then>
+		<else>
+			<property name="CADSR.DS.URL" value="${CADSR.DS.TNS.HOST}:${CADSR.DS.TNS.PORT}:${CADSR.DS.TNS.SID}" />
+			<echo message="Oracle 11g CADSR DS URL : ${CADSR.DS.URL}" />
+		</else>
+	</if>	
+	
 	<property name="CADSR.DS.FULLURL" value="${CADSR.DS.TNS.HOST}:${CADSR.DS.TNS.PORT}:${CADSR.DS.TNS.FULLSID}" />
 	
 	<property name="TOOL.ROOT.DIR" value="${TOOL.BASE.DIR}/cadsrsentinel" />
