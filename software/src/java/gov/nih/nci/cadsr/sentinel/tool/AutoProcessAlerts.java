@@ -992,11 +992,13 @@ public class AutoProcessAlerts
         }
         catch (FileNotFoundException ex)
         {
+        	ex.printStackTrace();        	
             _logSummary.writeError("Error opening auto alert dump file: " + rec_._reportFile);
             _logger.error(ex.toString(), ex);
         }
         catch (IOException ex)
         {
+        	ex.printStackTrace();        	
             _logSummary.writeError("Error writing to auto alert dump file: "
                 + rec_._reportFile);
             _logger.error(ex.toString(), ex);
@@ -1236,30 +1238,35 @@ public class AutoProcessAlerts
             }
             catch (InstantiationException ex)
             {
+            	ex.printStackTrace();            	
                 _logSummary.writeError(ex.toString());
                 _logAudits.writeParagraph1(errorPrefix + _auditTitles[index] + ":</i> " + ex.toString());
                 _logger.error(ex.toString(), ex);
             }
             catch (IllegalAccessException ex)
             {
+            	ex.printStackTrace();            	
                 _logSummary.writeError(ex.toString());
                 _logAudits.writeParagraph1(errorPrefix + _auditTitles[index] + ":</i> " + ex.toString());
                 _logger.error(ex.toString(), ex);
             }
             catch (ClassNotFoundException ex)
             {
+            	ex.printStackTrace();            	
                 _logSummary.writeError(ex.toString());
                 _logAudits.writeParagraph1(errorPrefix + _auditTitles[index] + ":</i> " + ex.toString());
                 _logger.error(ex.toString(), ex);
             }
             catch (ClassCastException ex)
             {
+            	ex.printStackTrace();            	
                 _logSummary.writeError("Class " + _audits[index] + " does not extend class AuditReport: " + ex.toString());
                 _logAudits.writeParagraph1(errorPrefix + _auditTitles[index] + ":</i> " + ex.toString());
                 _logger.error(ex.toString(), ex);
             }
             catch (Exception ex)
             {
+            	ex.printStackTrace();            	
                 _logSummary.writeError(ex.toString());
                 _logAudits.writeParagraph1(errorPrefix + _auditTitles[index] + ":</i> " + ex.toString());
                 _logger.error(ex.toString(), ex);
@@ -1726,11 +1733,13 @@ public class AutoProcessAlerts
         }
         catch (Exception ex)
         {
+        	ex.printStackTrace();        	
             _logSummary.writeError(ex.toString());
             _logger.error(ex.toString(), ex);
         }
         catch (OutOfMemoryError ex)
         {
+        	ex.printStackTrace();        	
             _logSummary.writeError(ex.toString());
             _logger.error(ex.toString(), ex);
         }
@@ -2047,18 +2056,21 @@ public class AutoProcessAlerts
 
         catch (AuthenticationFailedException ex)
         {
+        	ex.printStackTrace();        	
             String temp = ex.toString();
             _logSummary.writeError(temp);
             _logger.error(temp, ex);
         }
         catch (MessagingException ex)
         {
+        	ex.printStackTrace();        	
             String temp = ex.toString();
             _logSummary.writeError(temp);
             _logger.error(temp, ex);
         }
         catch (UnsupportedEncodingException ex)
         {
+        	ex.printStackTrace();        	
             String temp = ex.toString();
             _logSummary.writeError(temp);
             _logger.error(temp, ex);
@@ -2160,16 +2172,19 @@ public class AutoProcessAlerts
             }
             catch (MalformedURLException ex)
             {
+            	ex.printStackTrace();            	
                 _urlMsgsErr.add(ex.toString() + " " +  _processURL + "<br/>\n");
                 _logger.error(ex.toString(), ex);
             }
             catch (IOException ex)
             {
+            	ex.printStackTrace();	
                 _urlMsgsErr.add(ex.toString() + " " + _processURL + "<br/>\n");
                 _logger.error(ex.toString(), ex);
             }
             catch (Exception ex)
             {
+            	ex.printStackTrace();            	
                 _urlMsgsErr.add("Unexpected: " + ex.toString() + " " + _processURL + "<br/>\n");
                 _logger.error(ex.toString(), ex);
             }
@@ -2275,6 +2290,7 @@ public class AutoProcessAlerts
         }
         catch (FileNotFoundException ex)
         {
+        	ex.printStackTrace();
             _logSummary.writeError("Error opening auto alert dump xml file: " + _xmlFile);
             _logger.error(ex.toString(), ex);
         }

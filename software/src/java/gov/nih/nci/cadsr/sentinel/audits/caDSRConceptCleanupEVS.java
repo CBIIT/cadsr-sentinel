@@ -565,7 +565,7 @@ public class caDSRConceptCleanupEVS extends AuditReport
             {
                 _flag = false;
                 _logger.warn(ex.toString());
-                
+                _logger.debug("Error in Concept cleanup validate - "+ex.getStackTrace());                
                 // Can't continue if this exception occurs.
                 return;
             }
@@ -615,6 +615,7 @@ public class caDSRConceptCleanupEVS extends AuditReport
         }
         catch (Exception ex)
         {
+        	_logger.debug(" caDSRConceptCleanupEVS validate - " + ex.getStackTrace());
             StackTraceElement[] list = ex.getStackTrace();
             for (int i = 0; i < list.length; ++i)
                 msgs.add(list[i].toString());
@@ -710,6 +711,7 @@ public class caDSRConceptCleanupEVS extends AuditReport
                 }
                 catch (Exception ex)
                 {
+                   ex.printStackTrace();
                    msgs.add(ex.toString());
                    StackTraceElement[] list = ex.getStackTrace();
                    for (int i = 0; i < list.length; ++i)
@@ -898,7 +900,7 @@ public class caDSRConceptCleanupEVS extends AuditReport
     private static final Logger _logger = Logger.getLogger(caDSRConceptCleanupEVS.class.getName());
     
 	public String compareconceptWithEVS(ConceptItem rec, EVSConcept evsconcept, DBAlertOracleMetadata meta, LexBIGService _service) {
-    
+		_logger.debug(" Begin - compareconceptWithEVS ");
 	    boolean neededDisplay = false;
 	    boolean updateLongName = false, updateDefn = false, updateDefnSrc = false, updateStatus = false;
 	    String evsDefn = "";
@@ -908,7 +910,7 @@ public class caDSRConceptCleanupEVS extends AuditReport
     	
 	    if (evsconcept != null) {
 	    	Definition[] defs = evsconcept.definitions;
-	    	//System.out.println("No of EVS definitions: " + defs.length);
+	    	_logger.debug("No. of EVS definitions: " + defs.length);
 	    	
 	        if (rec._longName != null && !rec._longName.isEmpty() && !rec._longName.equalsIgnoreCase(evsconcept.preferredName)) {
 	        	neededDisplay = true;
@@ -921,19 +923,30 @@ public class caDSRConceptCleanupEVS extends AuditReport
 	        	boolean srcMatches = false;
 	        	//find matching definition for this definition source in EVS
                 for (Definition def : defs) {
-                	evsDefn = def.getValue().getContent();
-                    //Each definition in NCIt will only have once source.
-                	org.LexGrid.commonTypes.Source[] sources = def.getSource();
-                	org.LexGrid.commonTypes.Source defSource = sources[0];
-                	evsDefnSrc = defSource.getContent();
-                    //System.out.println("EVS Definition and source (with caDSR having source):" + evsDefn + ": "+ evsDefnSrc);
-                    if (evsDefnSrc.equals(rec._definitionSource)) {
-    	           		srcMatches = true;
-    	           		break;
-    	           	}
+                	try {
+	                	evsDefn = def.getValue().getContent();
+	                    //Each definition in NCIt will only have once source.
+	                	_logger.debug("evs defn: "+evsDefn);
+	                	org.LexGrid.commonTypes.Source[] sources = def.getSource();
+	                	_logger.debug("defn source array length: "+sources.length);
+	                	if (sources.length == 0) {
+	                		_logger.info("Source missing in EVS for evs defn: "+evsDefn);
+	                	} else {
+	                    	org.LexGrid.commonTypes.Source defSource = sources[0];
+	                    	evsDefnSrc = defSource.getContent();
+	                        _logger.debug("EVS Definition and source (with caDSR having source):" + evsDefn + ": "+ evsDefnSrc);
+	                        if (evsDefnSrc.equals(rec._definitionSource)) {
+	        	           		srcMatches = true;
+	        	           		break;
+	        	           	}
+	                	}
+		        	} catch (Exception ex) {
+		        		_logger.error("Error in getting the source for evs definition"+evsDefn);
+		        		ex.printStackTrace();
+		        	}
                 }
                 if (srcMatches) { //found matching definition source in EVS
-                	//System.out.println("Matched Definition and source :" + evsDefn + ": "+ evsDefnSrc);
+                	_logger.debug("Matched Definition and source :" + evsDefn + ": "+ evsDefnSrc);
                 	//if preferred definition doesn't match with EVS, update definition
                 	if (!rec._preferredDefinition.equalsIgnoreCase(evsDefn) ) { 
 	            		neededDisplay = true;
@@ -946,19 +959,30 @@ public class caDSRConceptCleanupEVS extends AuditReport
 	        	evsDefnSrc = "";
 	        	boolean isNCISrc = false;
 	        	for (Definition def : defs) {
-	        		evsDefn = def.getValue().getContent();
-                    //Each definition in NCIt will only have once source.
-                	org.LexGrid.commonTypes.Source[] sources = def.getSource();
-                	org.LexGrid.commonTypes.Source defSource = sources[0];
-                	evsDefnSrc = defSource.getContent();
-                    //System.out.println("EVS Definition and source (with caDSR having NO source):" + evsDefn + ": "+ evsDefnSrc);
-                    if (evsDefnSrc.equals("NCI")) {
-                    	isNCISrc = true;
-    	           		break;
-    	           	}
-                }
+		        	try {
+		        		evsDefn = def.getValue().getContent();
+		        		_logger.debug("evs defn: "+evsDefn);	        		
+	                    //Each definition in NCIt will only have once source.
+	                	org.LexGrid.commonTypes.Source[] sources = def.getSource();
+	                	_logger.debug("defn source array length: "+sources.length);
+	                	if (sources.length == 0) {
+	                		_logger.info("Source missing in EVS for evs defn: "+evsDefn);
+	                	}  else {
+	                		org.LexGrid.commonTypes.Source defSource = sources[0];
+		                	evsDefnSrc = defSource.getContent();
+		                	_logger.debug("EVS Definition and source (with caDSR having NO source):" + evsDefn + ": "+ evsDefnSrc);
+		                    if (evsDefnSrc.equals("NCI")) {
+		                    	isNCISrc = true;
+		    	           		break;
+		    	           	}	                		
+	                	}
+		        	} catch (Exception ex) {
+		        		_logger.error("Error in getting the source for evs definition"+evsDefn);
+		        		ex.printStackTrace();
+		        	}
+	        	}
 	        	if (isNCISrc) { //found NCI definition in EVS, update both definition and source in caDSR
-                	//System.out.println("NCI Definition and source :" + evsDefn + ": "+ evsDefnSrc);
+	        		_logger.debug("NCI Definition and source :" + evsDefn + ": "+ evsDefnSrc);
                 	neededDisplay = true;
 	            	updateDefn = true;
 	            	updateDefnSrc = true;
@@ -985,11 +1009,11 @@ public class caDSRConceptCleanupEVS extends AuditReport
 	    		cleanup_msg += "\nConflict with caDSR and EVS Concept Name";
 	    	if (updateStatus)
 	    		cleanup_msg += "\nConflict with caDSR and EVS Retirement Status";
-	    	/*
-	    	System.out.println("DSR Definition:" + rec._preferredDefinition + ": Definition Source:" + rec._definitionSource+ ": Long Name:" + rec._longName +  " : Workflow Status : RELEASED");
-	    	System.out.println("EVS Definition:" + evsDefn + ": Definition Source:" + evsDefnSrc + ": Preferred Name:" + evsconcept.preferredName + " : Status : " + evsconcept.status);
-	    	System.out.println("=======" + cleanup_msg + "=======");
-	    	*/
+	    	
+	    	_logger.debug("DSR Definition:" + rec._preferredDefinition + ": Definition Source:" + rec._definitionSource+ ": Long Name:" + rec._longName +  " : Workflow Status : RELEASED");
+	    	_logger.debug("EVS Definition:" + evsDefn + ": Definition Source:" + evsDefnSrc + ": Preferred Name:" + evsconcept.preferredName + " : Status : " + evsconcept.status);
+	    	_logger.debug("=======" + cleanup_msg + "=======");
+	    	
 	    	
 	    	String[] ret_info = null;
 	    	ConceptItem evsrec = new ConceptItem();
@@ -1019,6 +1043,8 @@ public class caDSRConceptCleanupEVS extends AuditReport
 	        }
 	        catch (Exception ex)
 	        {
+	        	_logger.debug("Exception in compareconceptWithEVS");
+	        	ex.printStackTrace();
 	        	cleanup_msg += ex.toString();
 	        	_logger.error(ex.toString());
 	        }
@@ -1026,7 +1052,7 @@ public class caDSRConceptCleanupEVS extends AuditReport
 	        //System.out.println("Update or not: " + updated);
 	        cleanup_msg = formatCeanupMsg(rec, evsrec, updatedrec, cleanup_msg);
 	    }
-	    
+	    _logger.debug(" End - compareconceptWithEVS - "+cleanup_msg);	    
         return cleanup_msg;
     }
 	 
