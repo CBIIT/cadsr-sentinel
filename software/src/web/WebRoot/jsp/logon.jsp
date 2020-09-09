@@ -60,11 +60,11 @@ L--%>
         <table summary=<bean:message key="logon.credits" />
             <tr>
                 <td valign="middle"><label for="logUserId"><bean:message key="logon.userid" /></label></td>
-                <td valign="middle"><html:text property="userid" styleClass="std" style="width: 3.75in" styleId="logUserId"/></td>
+                <td valign="middle"><input type="text" name="userid" value="" id="logUserId" style="width: 3.75in" class="std" autocomplete="off"></td>
             </tr><tr>
             <tr>
                 <td valign="middle"><label for="logPassword"><bean:message key="logon.pswd" /></label></td>
-                <td valign="middle"><html:password property="pswd" styleClass="std" style="width: 3.75in" styleId="logPassword"/></td>
+                <td valign="middle"><input type="password" name="pswd" value="" id="logPassword" style="width: 3.75in" class="std" autocomplete="off"></td>
             </tr><tr>
                 <td colspan="2" valign="middle"><html:errors /></td>
             </tr><tr>
